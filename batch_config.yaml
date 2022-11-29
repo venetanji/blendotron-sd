@@ -1,0 +1,22 @@
+outpath: emotionsets
+seeds: [42,892,234,2389]
+
+templates:
+  - a {contexts} expressing the emotion {emotions}
+  - a {contexts} expressing {emotions}
+
+contexts:
+  - robot
+  - person
+
+emotions: 
+  - Amusement
+  - Affection
+  - Positive Surprise
+  - Satisfaction
+  - Gratitude
+  - Annoyance
+  - Hate
+  - Shock
+  - Dissatisfaction
+  - Resentment
