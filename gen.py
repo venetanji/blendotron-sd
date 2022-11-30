@@ -4,6 +4,12 @@ import string
 from pathlib import Path
 from diffusers import StableDiffusionPipeline
 from tqdm.auto import tqdm
+import openai
+from dotenv import load_dotenv
+import urllib.request
+import os
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 batch_config =  yaml.safe_load(open('batch_config.yaml','r'))
@@ -19,9 +25,10 @@ for seed in tqdm(batch_config['seeds']):
         default = {}
         for idx, token in enumerate(tokens):
             default[token] = f'T{idx}'
-        outpath = Path(batch_config['outpath'])/template.format(**default) / str(seed)
-        print(outpath)
+
+        outpath = Path(batch_config['outpath'])/template.format(**default)
         outpath.mkdir(exist_ok=True, parents=True)
+        for model in batch_config['models']: Path(outpath/model).mkdir(exist_ok=True) 
         
         for idx, itoken in enumerate(tokens):
             if idx + 1 < len(tokens):
@@ -32,6 +39,11 @@ for seed in tqdm(batch_config['seeds']):
                         pformat[itoken] = tki
                         pformat[jtoken] = tkj
                         prompt = template.format(**pformat)
-                        image = pipe(prompt).images[0]  
-                        image.save(outpath/f'{prompt}.png')
+                        if 'sd' in batch_config['models']:
+                            image = pipe(prompt).images[0]  
+                            image.save(outpath/'sd'/f'sd-{prompt}-{str(seed)}.png')
+                        if 'dalle' in batch_config['models']:
+                            image_resp = openai.Image.create(prompt=prompt, n=1, size="512x512")
+                            url = image_resp['data'][0]['url']
+                            urllib.request.urlretrieve(url, outpath / 'dalle' /f'dalle-{prompt}-{image_resp["created"]}.png') 
     del pipe
