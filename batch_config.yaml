@@ -1,13 +1,21 @@
 outpath: emotionsets
 seeds: [42,892,234,2389]
-models:
-  - sd 
-  - dalle
+img-models: []
+  #- sd 
+  #- dalle
 
-templates:
+#used for stable diffusion and dalle
+img-templates:
   - a {contexts} expressing the emotion {emotions}
   - a {contexts} expressing {emotions}
   - a {contexts} feeling {emotions}
+
+text-models:
+  - gpt3
+
+#used if gpt3 is enabled in models
+text-templates:
+  - 'Write a story about a {contexts} expressing the emotion {emotions}:'
 
 contexts:
   - robot
