@@ -47,11 +47,11 @@ for seed in tqdm(batch_config['seeds']):
                         prompt = template.format(**pformat)
                         if 'sd' in batch_config['img-models']:
                             image = pipe(prompt).images[0]  
-                            image.save(outpath/'sd'/f'sd-{prompt}-{str(seed)}.png')
+                            image.save(outpath/'sd'/f'sd - {prompt} - {str(seed)}.png')
                         if 'dalle' in batch_config['img-models']:
                             image_resp = openai.Image.create(prompt=prompt, n=1, size="512x512")
                             url = image_resp['data'][0]['url']
-                            urllib.request.urlretrieve(url, outpath / 'dalle' /f'dalle-{prompt}-{image_resp["created"]}.png') 
+                            urllib.request.urlretrieve(url, outpath / 'dalle' /f'dalle - {prompt} - {image_resp["created"]}.png') 
 
     for template in batch_config['text-templates']:
         outpath, tokens = create_outfolder(template, 'text-models')
@@ -73,6 +73,7 @@ for seed in tqdm(batch_config['seeds']):
                             presence_penalty=0.5,
                             frequency_penalty=0.5
                         )
-                        with open(outpath / 'gpt3' / "".join(i for i in prompt if i not in "\/:*?<>|"), 'w') as f:
+                        fn_base = "".join(i for i in prompt if i not in "\/:*?<>|")
+                        with open(outpath / 'gpt3' / f'{fn_base} - {completion["created"]}.txt', 'w') as f:
                             f.write(completion.choices[0].text)
                             print(completion)
